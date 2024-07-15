@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtered Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            width: 80%;
+            max-width: 600px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #f0f0f0;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        p {
+            text-align: center;
+            color: #555;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .button-container button {
+            margin-right: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button-container button.paid {
+            background-color: #28a745;
+            color: white;
+        }
+        .button-container button.unpaid {
+            background-color: #dc3545;
+            color: white;
+        }
+        .button-container button.all-data {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Filtered Results:</h2>
+        {% if filtered_results %}
+            <ul>
+            {% for result in filtered_results %}
+                <li>
+                    Name: {{ result.name }}, Amount: {{ result.amount }},
+                    Time: {{ result.time }}, Date: {{ result.date }},
+                    Status: {{ result.status }}
+                    <div class="button-container">
+                        {% if result.status == 'paid' %}
+                            <button class="unpaid" onclick="updateStatus('{{ result._id }}', 'unpaid')">Mark Unpaid</button>
+                        {% else %}
+                            <button class="paid" onclick="updateStatus('{{ result._id }}', 'paid')">Mark Paid</button>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No data found for the selected criteria.</p>
+        {% endif %}
+        <div class="button-container">
+            <button class="all-data" onclick="fetchAllData()">All Data</button>
+        </div>
+        <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    </div>
+
+    <script>
+        function updateStatus(id, status) {
+            fetch('/update_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id, status: status })
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload(); // Reload the page to see updated data
+                } else {
+                    console.error('Failed to update status');
+                }
+            })
+            .catch(error => console.error('Error updating status:', error));
+        }
+
+        function fetchAllData() {
+            window.location.href = "/all_data";
+        }
+    </script>
+</body>
+</html>
