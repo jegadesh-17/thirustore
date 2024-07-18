@@ -3,10 +3,12 @@ from pymongo import MongoClient
 from datetime import datetime
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import os
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Set a secret key for flashing messages
-client = MongoClient('mongodb+srv://jagjegadesh:8667822518Jio@cluster0.rkzhp7w.mongodb.net/')
+# app = Flask(__name__, template_folder='static')
+
+app.secret_key = os.urandom(24)  # Set a secret key for flashing messages
+client = MongoClient('mongodb+srv://jagjegadesh:8667822518Jio@ac-wvrx6cn-shard-00-01.rkzhp7w.mongodb.net/')
 db = client['store']  # Replace 'store' with your actual database name
 
 @app.route('/')
