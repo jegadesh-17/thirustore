@@ -10,10 +10,22 @@ client = MongoClient('mongodb+srv://jagjegadesh:8667822518Jio@cluster0.rkzhp7w.m
 db = client['store']  # Replace 'store' with your actual database name
 
 @app.route('/')
+@app.route('/store/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = db.users.find_one({'username': username})
+        
+        if user and check_password_hash(user['password'], password):
+            session['username'] = username
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password', 'error')
+            return redirect(url_for('login'))
     return render_template('login.html')
 
-@app.route('/dashboard', methods=['POST', 'GET'])
+@app.route('/store/dashboard', methods=['POST', 'GET'])
 def dashboard():
     if request.method == 'POST':
         username = request.form['username']
@@ -35,7 +47,7 @@ def dashboard():
         else:
             return redirect(url_for('login'))
 
-@app.route('/save_data', methods=['POST'])
+@app.route('/store/save_data', methods=['POST'])
 def save_data():
     if 'username' in session:
         name = request.form['name']
@@ -56,7 +68,7 @@ def save_data():
     else:
         return redirect(url_for('login'))
 
-@app.route('/search_and_filter', methods=['GET'])
+@app.route('/store/search_and_filter', methods=['GET'])
 def search_and_filter():
     try:
         search_name = request.args.get('search_name')
@@ -72,7 +84,7 @@ def search_and_filter():
         print("Error fetching data:", str(e))
         return render_template('search_results.html', filtered_results=[], error_message="Error fetching data. Please try again.")
 
-@app.route('/update_status', methods=['POST'])
+@app.route('/store/update_status', methods=['POST'])
 def update_status():
     try:
         data = request.get_json()
@@ -84,7 +96,7 @@ def update_status():
         print("Error updating status:", str(e))
         return jsonify({'error': 'Failed to update status'}), 500
 
-@app.route('/create_user', methods=['GET', 'POST'])
+@app.route('/store/create_user', methods=['GET', 'POST'])
 def create_user():
     if request.method == 'POST':
         username = request.form['username']
@@ -101,7 +113,8 @@ def create_user():
         return redirect(url_for('login'))
     
     return render_template('create_user.html')
-@app.route('/all_data', methods=['GET'])
+
+@app.route('/store/all_data', methods=['GET'])
 def all_data():
     try:
         all_data = list(db.data.find().sort('date', -1))  # Fetch all data from MongoDB in descending order
@@ -112,4 +125,3 @@ def all_data():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

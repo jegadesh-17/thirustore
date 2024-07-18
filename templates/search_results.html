@@ -109,7 +109,7 @@
 
     <script>
         function updateStatus(id, status) {
-            fetch('/update_status', {
+            fetch('/store/update_status', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -127,7 +127,7 @@
         }
 
         function fetchAllData() {
-            window.location.href = "/all_data";
+            window.location.href = "/store/all_data";
         }
     </script>
 </body>
