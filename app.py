@@ -11,7 +11,7 @@ app.secret_key = os.urandom(24)  # Set a secret key for flashing messages
 client = MongoClient('mongodb+srv://jagjegadesh:8667822518Jio@ac-wvrx6cn-shard-00-01.rkzhp7w.mongodb.net/')
 db = client['store']  # Replace 'store' with your actual database name
 
-@app.route('/')
+
 @app.route('/store/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -124,6 +124,10 @@ def all_data():
     except Exception as e:
         print("Error fetching all data:", str(e))
         return render_template('search_results.html', filtered_results=[], error_message="Error fetching all data. Please try again.")
+
+@app.route('/', methods=['GET'])
+def demo():
+    return "hello world"
 
 if __name__ == '__main__':
     app.run(debug=True)
